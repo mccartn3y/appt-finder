@@ -7,16 +7,20 @@ import json
 import urllib
 import time
 
-# set up twilio using https://www.twilio.com/blog/send-whatsapp-message-30-seconds-python
-from twilio.rest import Client
-account_sid = 'ACd94c1924c79aead0dcf7df3fa4b74c67'
+#flag to skip WhatsApp message - Set to False to use Twilio
+skip_whatapp = True
 
-# load authentication token and destination number from json
-with open("twilio.auth", "r") as file:
-    dic = json.load(file)
-auth_token = dic['auth_token']
-num = dic['to']
-client = Client(account_sid, auth_token) 
+if not skip_whatapp:
+    # set up twilio using https://www.twilio.com/blog/send-whatsapp-message-30-seconds-python
+    from twilio.rest import Client
+    account_sid = 'ACd94c1924c79aead0dcf7df3fa4b74c67'
+
+    # load authentication token and destination number from json
+    with open("twilio.auth", "r") as file:
+        dic = json.load(file)
+    auth_token = dic['auth_token']
+    num = dic['to']
+    client = Client(account_sid, auth_token) 
 
 br = mechanize.Browser()
 br.set_handle_robots(False)
@@ -45,7 +49,7 @@ while True:
                                                                       temp_dict['time'],
                                                                       temp_dict['doc']))
             # send message if one hasn't been sent about this appointment and in the last 30 secs
-            for termine in appt_dict:
+            for termine in appt_dict and not skip_whatapp::
                 if notify_wait > 6 and termine['id'] not in notified_id:
                     message = client.messages.create( 
                                           from_='whatsapp:+14155238886',  
