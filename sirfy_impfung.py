@@ -13,7 +13,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 #flag to skip WhatsApp message - Set to False to use Twilio
 skip_whatapp = False
-test_whatsapp = True
+test_whatsapp = False
 
 cooldown_time = 15 # seconds
 
@@ -44,7 +44,8 @@ def init_twilio_client():
 
 def main():
 
-    if not skip_whatapp:
+    if skip_whatapp is not True:
+        twilio_number = os.environ['TWILIO_NUMBER']
         # set up twilio using https://www.twilio.com/blog/send-whatsapp-message-30-seconds-python
         client = init_twilio_client()
 
@@ -59,7 +60,7 @@ def main():
     try:
         resp = br.open("https://onlinetermine.zollsoft.de/includes/searchTermine_app_feature.php", data)
         resp_dict = json.loads(BeautifulSoup(resp, 'html.parser').prettify())
-        print(resp_dict)
+
         if len(resp_dict['termine']) > 0:
             appt_dict = []
             for termine in resp_dict['termine']:
