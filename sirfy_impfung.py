@@ -17,6 +17,7 @@ test_whatsapp = False
 
 cooldown_time = 15 # seconds
 
+
 def test_twilio_message():
 
     client = init_twilio_client()
@@ -35,12 +36,14 @@ def test_twilio_message():
 
     print(message)
 
+
 def init_twilio_client():
     twilio_sid = os.environ['TWILIO_SID']
     twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
 
     client = Client(twilio_sid, twilio_auth_token) 
     return client
+
 
 def main():
 
@@ -93,6 +96,7 @@ def main():
 
     except Exception as exception:
         print(exception)
+
 
 if __name__ == '__main__':
     while True:
