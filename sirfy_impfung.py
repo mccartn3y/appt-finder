@@ -49,7 +49,7 @@ while True:
                                                                       temp_dict['time'],
                                                                       temp_dict['doc']))
             # send message if one hasn't been sent about this appointment and in the last 30 secs
-            for termine in appt_dict and not skip_whatapp::
+            for termine in appt_dict and not skip_whatapp:
                 if notify_wait > 6 and termine['id'] not in notified_id:
                     message = client.messages.create( 
                                           from_='whatsapp:+14155238886',  
