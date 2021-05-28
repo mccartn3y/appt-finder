@@ -6,7 +6,7 @@ import time
 import mechanize
 import ssl
 from twilio.rest import Client
-import datetime
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 ssl._create_default_https_context = ssl._create_unverified_context
