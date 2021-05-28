@@ -15,7 +15,8 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 #flag to skip WhatsApp message - Set to False to use Twilio
 skip_whatapp = False
-test_whatsapp = False
+run_test_whatsapp = True
+run_test_appt2dict = True
 load_twilio_config = True
 
 if load_twilio_config:
@@ -35,7 +36,7 @@ def test_twilio_message():
     client = init_twilio_client()
 
     
-    print(twilio_number)
+    print(os.environ['TWILIO_NUMBER'])
     temp_dict = {}
     temp_dict['time'] = '10:00:00'
     temp_dict['Date'] = '01/01/2021'
@@ -62,6 +63,24 @@ def init_twilio_client():
     client = Client(twilio_sid, twilio_auth_token) 
     return client
 
+def appt2dict(termine):
+    temp_dict = {}
+    temp_dict['Date'] = termine[0]
+    temp_dict['time'] = termine[1]
+    temp_dict['id'] = termine[2]
+    temp_dict['doc'] = termine[3]
+    temp_dict['desc'] = termine[4]
+    
+    print("{}: Appointment for {} on {} at {} with {}".format(datetime.now().strftime("%d/%m/%y %H:%M:%S"),
+                                                        temp_dict['desc'],
+                                                        temp_dict['Date'],
+                                                        temp_dict['time'],
+                                                        temp_dict['doc']))
+    return temp_dict
+
+def test_appt2dict():
+	termine = ['01/01/2021', '14:00', '0001', 'Dr. Sirfy', 'Your paracetamoxifrusibendroneomycin vaccine.']
+	print(appt2dict(termine))
 
 def main():
 
@@ -85,18 +104,7 @@ def main():
         if len(resp_dict['termine']) > 0:
             appt_dict = []
             for termine in resp_dict['termine']:
-                temp_dict = {}
-                temp_dict['Date'] = termine[0]
-                temp_dict['time'] = termine[1]
-                temp_dict['id'] = termine[2]
-                temp_dict['doc'] = termine[3]
-                temp_dict['desc'] = termine[4]
-                appt_dict.append(temp_dict)
-                print("{}: Appointment for {} on {} at {} with {}".format(datetime.now().strftime("%d/%m/%y %H:%M:%S"),
-                                                                    temp_dict['desc'],
-                                                                    temp_dict['Date'],
-                                                                    temp_dict['time'],
-                                                                    temp_dict['doc']))
+                appt_dict.append(appt2dict(termine))
 
             # send message if one hasn't been sent about this appointment and in the last 30 secs
             for termine in appt_dict and not skip_whatapp:
@@ -114,9 +122,12 @@ def main():
 if __name__ == '__main__':
     while True:
 
-        if test_whatsapp is True:
+        if run_test_whatsapp is True:
             print('test whatsapp message')
             test_twilio_message()
+        if run_test_appt2dict is True:
+            print('test appointment printout')
+            test_appt2dict()
 
         main()
         time.sleep(cooldown_time)
