@@ -38,19 +38,19 @@ def test_twilio_message():
     
     print(os.environ['TWILIO_NUMBER'])
     temp_dict = {}
-    temp_dict['time'] = '10:00'
+    temp_dict['des'] = 'Paracetamoxifrusibendroneomycin vaccine'
     temp_dict['Date'] = '01/01/2021'
-    message =  send_twilio(temp_dict['Date'], temp_dict['time'], client)
+    message =  send_twilio(temp_dict['Date'], temp_dict['des'], client)
 
     print(message)
 
-def send_twilio(date, time, client):
+def send_twilio(date, desc, client):
 
 	twilio_number = os.environ['TWILIO_NUMBER']
 	message = client.messages.create( 
                                     from_='whatsapp:+14155238886',  
-                                    body='TESTING: Your appointment is coming up on {}  at {}'.format(date,
-                                                                time),      
+                                    body='Your {} appointment is coming up on {}'.format(desc,
+                                                                date),      
                                     to=twilio_number 
                                 )
 	return message
@@ -79,7 +79,7 @@ def appt2dict(termine):
     return temp_dict
 
 def test_appt2dict():
-	termine = ['01/01/2021', '14:00', '0001', 'Dr. Sirfy', 'Your paracetamoxifrusibendroneomycin vaccine.']
+	termine = ['01/01/2021', '14:00', '0001', 'Dr. Sirfy', 'Paracetamoxifrusibendroneomycin vaccine']
 	print(appt2dict(termine))
 
 def main():
