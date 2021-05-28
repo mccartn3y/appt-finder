@@ -38,7 +38,7 @@ def test_twilio_message():
     
     print(os.environ['TWILIO_NUMBER'])
     temp_dict = {}
-    temp_dict['time'] = '10:00:00'
+    temp_dict['time'] = '10:00'
     temp_dict['Date'] = '01/01/2021'
     message =  send_twilio(temp_dict['Date'], temp_dict['time'], client)
 
@@ -120,15 +120,15 @@ def main():
 
 
 if __name__ == '__main__':
+
+    if run_test_whatsapp is True:
+        print('test whatsapp message')
+        test_twilio_message()
+    if run_test_appt2dict is True:
+        print('test appointment printout')
+        test_appt2dict()
+
     while True:
-
-        if run_test_whatsapp is True:
-            print('test whatsapp message')
-            test_twilio_message()
-        if run_test_appt2dict is True:
-            print('test appointment printout')
-            test_appt2dict()
-
         main()
         time.sleep(cooldown_time)
 
