@@ -9,11 +9,23 @@ from twilio.rest import Client
 from datetime import datetime
 from bs4 import BeautifulSoup
 
+
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 #flag to skip WhatsApp message - Set to False to use Twilio
 skip_whatapp = False
 test_whatsapp = False
+load_twilio_config = True
+
+if load_twilio_config:
+    os.environ['TWILIO_SID'] = 'ACd94c1924c79aead0dcf7df3fa4b74c67'
+
+    # load authentication token and destination number from json
+    with open("twilio.auth", "r") as file:
+        dic = json.load(file)
+    os.environ['TWILIO_AUTH_TOKEN'] = dic['auth_token']
+    os.environ['TWILIO_NUMBER'] = dic['to'] 
 
 cooldown_time = 15 # seconds
 
