@@ -15,8 +15,8 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 #flag to skip WhatsApp message - Set to False to use Twilio
 skip_whatapp = False
-run_test_whatsapp = True
-run_test_appt2dict = True
+run_test_whatsapp = False
+run_test_appt2dict = False
 load_twilio_config = True
 
 if load_twilio_config:
@@ -109,13 +109,14 @@ def main():
             # send message if one hasn't been sent about this appointment and in the last 30 secs
             for termine in appt_dict and not skip_whatapp:
                 if notify_wait > 6 and termine['id'] not in notified_id:
-                    message =  send_twilio(temp_dict['Date'], temp_dict['time'], client) 
+                    message =  send_twilio(temp_dict['Date'], temp_dict['des'], client) 
                     notified_id.append(termine['id'])
                     notify_wait = 0
 
         notify_wait +=1
 
     except Exception as exception:
+        print(resp_dict['termine'])
         print(exception)
 
 
@@ -124,9 +125,11 @@ if __name__ == '__main__':
     if run_test_whatsapp is True:
         print('test whatsapp message')
         test_twilio_message()
+        print('whatsapp message test complete')
     if run_test_appt2dict is True:
         print('test appointment printout')
         test_appt2dict()
+        print('appointment printout test complete')
 
     while True:
         main()
