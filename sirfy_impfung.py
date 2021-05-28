@@ -34,19 +34,25 @@ def test_twilio_message():
 
     client = init_twilio_client()
 
-    twilio_number = os.environ['TWILIO_NUMBER']
+    
     print(twilio_number)
     temp_dict = {}
     temp_dict['time'] = '10:00:00'
     temp_dict['Date'] = '01/01/2021'
-    message = client.messages.create( 
-                                    from_='whatsapp:+14155238886',  
-                                    body='TESTING: Your appointment is coming up on {}  at {}'.format(temp_dict['Date'],
-                                                                temp_dict['time']),      
-                                    to=twilio_number 
-                                ) 
+    message =  send_twilio(temp_dict['Date'], temp_dict['time'], client)
 
     print(message)
+
+def send_twilio(date, time, client):
+
+	twilio_number = os.environ['TWILIO_NUMBER']
+	message = client.messages.create( 
+                                    from_='whatsapp:+14155238886',  
+                                    body='TESTING: Your appointment is coming up on {}  at {}'.format(date,
+                                                                time),      
+                                    to=twilio_number 
+                                )
+	return message
 
 
 def init_twilio_client():
@@ -95,12 +101,7 @@ def main():
             # send message if one hasn't been sent about this appointment and in the last 30 secs
             for termine in appt_dict and not skip_whatapp:
                 if notify_wait > 6 and termine['id'] not in notified_id:
-                    message = client.messages.create( 
-                                        from_='whatsapp:+14155238886',  
-                                        body='Your appointment is coming up on {}  at {}'.format(temp_dict['Date'],
-                                                                    temp_dict['time']),      
-                                        to=twilio_number 
-                                    ) 
+                    message =  send_twilio(temp_dict['Date'], temp_dict['time'], client) 
                     notified_id.append(termine['id'])
                     notify_wait = 0
 
