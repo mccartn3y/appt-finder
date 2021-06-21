@@ -15,7 +15,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 #flag to skip WhatsApp message - Set to False to use Twilio
 skip_whatapp = False
-run_test_whatsapp = False
+run_test_whatsapp = False#True
 run_test_appt2dict = False
 load_twilio_config = True
 
@@ -28,7 +28,7 @@ if load_twilio_config:
     os.environ['TWILIO_AUTH_TOKEN'] = dic['auth_token']
     os.environ['TWILIO_NUMBER'] = dic['to'] 
 
-cooldown_time = 15 # seconds
+cooldown_time = 5 # seconds
 
 
 def test_twilio_message():
@@ -52,7 +52,8 @@ def send_twilio(date, desc, client):
                                     body='Your {} appointment is coming up on {}'.format(desc,
                                                                 date),      
                                     to=twilio_number 
-                                )
+                                    )
+	print("Message send to {} successful".format(twilio_number))
 	return message
 
 
@@ -94,21 +95,24 @@ def main():
     br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
     params = {"versichert": "", "terminsuche": "", "uniqueident": "607feb7a343fb"}
     data = urllib.parse.urlencode(params)
-    notified_id = []
-    notify_wait = 0
-
+    #notified_id = []
+    global notified_id
+    global notify_wait
+    #notify_wait = 0
+    resp_dict = {'termine':None}
     try:
         resp = br.open("https://onlinetermine.zollsoft.de/includes/searchTermine_app_feature.php", data)
         resp_dict = json.loads(BeautifulSoup(resp, 'html.parser').prettify())
 
         if len(resp_dict['termine']) > 0:
-            appt_dict = []
+            global appt_dict
+            #appt_dict = []
             for termine in resp_dict['termine']:
                 appt_dict.append(appt2dict(termine))
 
             # send message if one hasn't been sent about this appointment and in the last 30 secs
-            for termine in appt_dict and not skip_whatapp:
-                if notify_wait > 6 and termine['id'] not in notified_id:
+            for termine in appt_dict:
+                if notify_wait > 6 and termine['id'] not in notified_id and not skip_whatsapp:
                     message =  send_twilio(temp_dict['Date'], temp_dict['des'], client) 
                     notified_id.append(termine['id'])
                     notify_wait = 0
@@ -130,8 +134,13 @@ if __name__ == '__main__':
         print('test appointment printout')
         test_appt2dict()
         print('appointment printout test complete')
-
+    global appt_dict
+    global notify_wait
+    global notified_id
     while True:
+        appt_dict = []
+        notify_wait=0
+        notified_id = []
         main()
         time.sleep(cooldown_time)
 
