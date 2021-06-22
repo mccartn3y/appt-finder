@@ -71,8 +71,8 @@ def appt2dict(termine):
     temp_dict['id'] = termine[2]
     temp_dict['doc'] = termine[3]
     temp_dict['desc'] = termine[4]
-    
-    print("{}: Appointment for {} on {} at {} with {}".format(datetime.now().strftime("%d/%m/%y %H:%M:%S"),
+    if 'Schnelltest' not in temp_dict['desc'] and 'Anti' not in temp_dict['desc'] and 'PCR' not in temp_dict['desc']:
+        print("{}: Appointment for {} on {} at {} with {}".format(datetime.now().strftime("%d/%m/%y %H:%M:%S"),
                                                         temp_dict['desc'],
                                                         temp_dict['Date'],
                                                         temp_dict['time'],
@@ -112,8 +112,8 @@ def main():
 
             # send message if one hasn't been sent about this appointment and in the last 30 secs
             for termine in appt_dict:
-                if notify_wait > 6 and termine['id'] not in notified_id and not skip_whatsapp:
-                    message =  send_twilio(temp_dict['Date'], temp_dict['des'], client) 
+                if notify_wait > 6 and termine['id'] not in notified_id and not skip_whatapp and 'Schnelltest' not in termine['desc'] and 'Anti' not in termine['desc'] and 'PCR' not in termine['desc']:
+                    message =  send_twilio(termine['Date'], termine['desc'], client) 
                     notified_id.append(termine['id'])
                     notify_wait = 0
 
@@ -137,10 +137,10 @@ if __name__ == '__main__':
     global appt_dict
     global notify_wait
     global notified_id
+    appt_dict = []
+    notify_wait=0
+    notified_id = []
     while True:
-        appt_dict = []
-        notify_wait=0
-        notified_id = []
         main()
         time.sleep(cooldown_time)
 
