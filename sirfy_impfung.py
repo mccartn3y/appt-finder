@@ -19,6 +19,9 @@ run_test_whatsapp = False#True
 run_test_appt2dict = False
 load_twilio_config = True
 
+#Use thjis list to filter out aapointments from the log and messaging service
+incl_kwrds = ['zweite', 'comirnaty']
+
 if load_twilio_config:
     os.environ['TWILIO_SID'] = 'ACd94c1924c79aead0dcf7df3fa4b74c67'
 
@@ -71,7 +74,7 @@ def appt2dict(termine):
     temp_dict['id'] = termine[2]
     temp_dict['doc'] = termine[3]
     temp_dict['desc'] = termine[4]
-    if 'Schnelltest' not in temp_dict['desc'] and 'Anti' not in temp_dict['desc'] and 'PCR' not in temp_dict['desc']:
+    if any([x.lower() in temp_dict['desc'].lower() for x in incl_kwrds]):
         print("{}: Appointment for {} on {} at {} with {}".format(datetime.now().strftime("%d/%m/%y %H:%M:%S"),
                                                         temp_dict['desc'],
                                                         temp_dict['Date'],
@@ -112,7 +115,7 @@ def main():
 
             # send message if one hasn't been sent about this appointment and in the last 30 secs
             for termine in appt_dict:
-                if notify_wait > 6 and termine['id'] not in notified_id and not skip_whatapp and 'Schnelltest' not in termine['desc'] and 'Anti' not in termine['desc'] and 'PCR' not in termine['desc']:
+                if notify_wait > 6 and termine['id'] not in notified_id and not skip_whatapp and any([x.lower() in termine['desc'].lower() for x in incl_kwrds]):
                     message =  send_twilio(termine['Date'], termine['desc'], client) 
                     notified_id.append(termine['id'])
                     notify_wait = 0
